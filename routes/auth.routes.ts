@@ -10,5 +10,6 @@ const authRoutes = new Hono()
 authRoutes.post('/register', validate(authValidation.register), authController.registerUser)
 authRoutes.post('/login', validate(authValidation.login), authController.loginUser)
 authRoutes.get('/me', authMiddleware, authController.getMe)
+authRoutes.post('/logout', authController.logout)
 
 export default authRoutes

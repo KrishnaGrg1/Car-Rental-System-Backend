@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import { prisma } from '../config/db'
 import env from '../config/env'
 import '../types/hono.d'
-import { setCookie } from 'hono/cookie'
+import { setCookie, deleteCookie } from 'hono/cookie'
 
 /**
  * Authentication Controller
@@ -74,7 +74,14 @@ class AuthController {
       expiresIn: this.TOKEN_EXPIRY,
     })
 
-    setCookie(c,'access_token',token)
+    setCookie(c, 'access_token', token, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'Strict',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    })
+
     return c.json({ message: 'Login successful' }, 200)
   }
 
@@ -95,6 +102,18 @@ class AuthController {
     }
 
     return c.json({ message: 'Success', data: user }, 200)
+  }
+
+  /**
+   * Logout user and clear auth cookie
+   * @route POST /auth/logout
+   */
+  public logout = async (c: Context): Promise<Response> => {
+    deleteCookie(c, 'access_token', {
+      path: '/',
+    })
+
+    return c.json({ message: 'Logged out successfully' }, 200)
   }
 }
 
