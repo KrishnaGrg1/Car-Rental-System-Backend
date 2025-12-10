@@ -1,6 +1,7 @@
 import type { MiddlewareHandler } from 'hono'
 import jwt from 'jsonwebtoken'
-import { getCookie } from 'hono/cookie';
+import { getCookie } from 'hono/cookie'
+
 import env from '../config/env'
 import '../types/hono.d'
 
@@ -12,15 +13,25 @@ interface JwtPayload {
 
 /**
  * Authentication Middleware
- * Validates JWT token and attaches user ID to request
+ * Validates JWT token from Bearer header (mobile) or cookie (web)
+ * and attaches user ID to request
  */
 const authMiddleware: MiddlewareHandler = async (c, next) => {
- 
+  let token: string | undefined
 
-  const token = getCookie(c, 'access_token');
+  // First, check for Bearer token in Authorization header (mobile clients)
+  const authHeader = c.req.header('Authorization')
+  if (authHeader?.startsWith('Bearer ')) {
+    token = authHeader.substring(7)
+  }
+
+  // Fallback to cookie (web clients)
+  if (!token) {
+    token = getCookie(c, 'access_token')
+  }
 
   if (!token) {
-    return c.json({ message: 'Token is required' }, 401)
+    return c.json({ message: 'Authentication required' }, 401)
   }
 
   try {

@@ -71,14 +71,25 @@ PORT=3000
 
 Base URL: `/api/v1`
 
-### 1️⃣ Auth Routes
+### 🔐 Authentication
 
-> 🍪 **Authentication:** This API uses HTTP-only cookies for secure authentication. The `access_token` cookie is automatically set on login and sent with subsequent requests.
+This API supports **two authentication methods**:
+
+| Method | Usage | How to Use |
+| ------ | ----- | ---------- |
+| **Cookie** | Web browsers | Automatically set on login via `access_token` cookie |
+| **Bearer Token** | Mobile apps | Send header `Authorization: Bearer <token>` |
+
+> The login endpoint returns the token in the response body for mobile apps, and also sets an HTTP-only cookie for web clients.
+
+---
+
+### 1️⃣ Auth Routes
 
 | Method | Endpoint         | Request Body                                                                 | Description                    |
 | ------ | ---------------- | ---------------------------------------------------------------------------- | ------------------------------ |
 | POST   | `/auth/register` | `{ "name": "John", "email": "john@example.com", "password": "123456" }`      | Register a new user            |
-| POST   | `/auth/login`    | `{ "email": "john@example.com", "password": "123456" }`                      | Login (sets `access_token` cookie) |
+| POST   | `/auth/login`    | `{ "email": "john@example.com", "password": "123456" }`                      | Login (returns `token` in response) |
 | GET    | `/auth/me`       | None                                                                         | Get current user profile 🔒    |
 | POST   | `/auth/logout`   | None                                                                         | Logout (clears cookie)         |
 
@@ -86,7 +97,7 @@ Base URL: `/api/v1`
 
 ### 2️⃣ User Routes
 
-> 🔒 **Requires Authentication:** Cookie `access_token` must be present
+> 🔒 **Requires Authentication:** Cookie or `Authorization: Bearer <token>`
 
 | Method | Endpoint       | Request Body                                    | Description                     |
 | ------ | -------------- | ----------------------------------------------- | ------------------------------- |
@@ -110,7 +121,7 @@ Base URL: `/api/v1`
 
 ### 4️⃣ Booking Routes
 
-> 🔒 **Requires Authentication:** Cookie `access_token` must be present
+> 🔒 **Requires Authentication:** Cookie or `Authorization: Bearer <token>`
 
 | Method | Endpoint              | Request Body                                                                                       | Description              |
 | ------ | --------------------- | -------------------------------------------------------------------------------------------------- | ------------------------ |
@@ -122,7 +133,7 @@ Base URL: `/api/v1`
 
 ### 5️⃣ Admin Routes
 
-> 🔒 **Requires Authentication:** Cookie `access_token` + **Admin role**
+> 🔒 **Requires Authentication:** Cookie or `Authorization: Bearer <token>` + **Admin role**
 
 | Method | Endpoint                    | Request Body | Description                        |
 | ------ | --------------------------- | ------------ | ---------------------------------- |

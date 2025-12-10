@@ -74,6 +74,7 @@ class AuthController {
       expiresIn: this.TOKEN_EXPIRY,
     })
 
+    // Set cookie for web clients
     setCookie(c, 'access_token', token, {
       httpOnly: true,
       secure: env.NODE_ENV === 'production',
@@ -82,7 +83,8 @@ class AuthController {
       path: '/',
     })
 
-    return c.json({ message: 'Login successful' }, 200)
+    // Return token in response for mobile clients
+    return c.json({ message: 'Login successful', token }, 200)
   }
 
   /**
