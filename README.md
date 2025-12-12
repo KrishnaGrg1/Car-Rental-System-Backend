@@ -75,10 +75,10 @@ Base URL: `/api/v1`
 
 This API supports **two authentication methods**:
 
-| Method | Usage | How to Use |
-| ------ | ----- | ---------- |
-| **Cookie** | Web browsers | Automatically set on login via `access_token` cookie |
-| **Bearer Token** | Mobile apps | Send header `Authorization: Bearer <token>` |
+| Method           | Usage        | How to Use                                           |
+| ---------------- | ------------ | ---------------------------------------------------- |
+| **Cookie**       | Web browsers | Automatically set on login via `access_token` cookie |
+| **Bearer Token** | Mobile apps  | Send header `Authorization: Bearer <token>`          |
 
 > The login endpoint returns the token in the response body for mobile apps, and also sets an HTTP-only cookie for web clients.
 
@@ -86,12 +86,12 @@ This API supports **two authentication methods**:
 
 ### 1️⃣ Auth Routes
 
-| Method | Endpoint         | Request Body                                                                 | Description                    |
-| ------ | ---------------- | ---------------------------------------------------------------------------- | ------------------------------ |
-| POST   | `/auth/register` | `{ "name": "John", "email": "john@example.com", "password": "123456" }`      | Register a new user            |
-| POST   | `/auth/login`    | `{ "email": "john@example.com", "password": "123456" }`                      | Login (returns `token` in response) |
-| GET    | `/auth/me`       | None                                                                         | Get current user profile 🔒    |
-| POST   | `/auth/logout`   | None                                                                         | Logout (clears cookie)         |
+| Method | Endpoint         | Request Body                                                            | Description                         |
+| ------ | ---------------- | ----------------------------------------------------------------------- | ----------------------------------- |
+| POST   | `/auth/register` | `{ "name": "John", "email": "john@example.com", "password": "123456" }` | Register a new user                 |
+| POST   | `/auth/login`    | `{ "email": "john@example.com", "password": "123456" }`                 | Login (returns `token` in response) |
+| GET    | `/auth/me`       | None                                                                    | Get current user profile 🔒         |
+| POST   | `/auth/logout`   | None                                                                    | Logout (clears cookie)              |
 
 ---
 
@@ -99,23 +99,23 @@ This API supports **two authentication methods**:
 
 > 🔒 **Requires Authentication:** Cookie or `Authorization: Bearer <token>`
 
-| Method | Endpoint       | Request Body                                    | Description                     |
-| ------ | -------------- | ----------------------------------------------- | ------------------------------- |
-| GET    | `/user/me`     | None                                            | Get logged-in user profile      |
-| PUT    | `/user/me`     | `{ "name": "John New", "phone": "9876543210" }` | Update logged-in user profile   |
-| POST   | `/user/upload` | `FormData { license: File }`                    | Upload driver license (optional)|
+| Method | Endpoint       | Request Body                                    | Description                      |
+| ------ | -------------- | ----------------------------------------------- | -------------------------------- |
+| GET    | `/user/me`     | None                                            | Get logged-in user profile       |
+| PUT    | `/user/me`     | `{ "name": "John New", "phone": "9876543210" }` | Update logged-in user profile    |
+| POST   | `/user/upload` | `FormData { license: File }`                    | Upload driver license (optional) |
 
 ---
 
 ### 3️⃣ Car Routes
 
-| Method | Endpoint    | Request Body                                                                                      | Description                          |
-| ------ | ----------- | ------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| GET    | `/cars`     | Query params: `?type=SUV&brand=Toyota`                                                            | Get all cars, filter by type/brand   |
-| GET    | `/cars/:id` | None                                                                                              | Get car details by ID                |
-| POST   | `/cars`     | `{ "name": "Corolla", "brand": "Toyota", "type": "Sedan", "pricePerDay": 50, "seats": 5 }`       | Create a new car *(admin only)*      |
-| PUT    | `/cars/:id` | `{ "pricePerDay": 60 }`                                                                           | Update car details *(admin only)*    |
-| DELETE | `/cars/:id` | None                                                                                              | Delete a car *(admin only)*          |
+| Method | Endpoint    | Request Body                                                                               | Description                        |
+| ------ | ----------- | ------------------------------------------------------------------------------------------ | ---------------------------------- |
+| GET    | `/cars`     | Query params: `?type=SUV&brand=Toyota`                                                     | Get all cars, filter by type/brand |
+| GET    | `/cars/:id` | None                                                                                       | Get car details by ID              |
+| POST   | `/cars`     | `{ "name": "Corolla", "brand": "Toyota", "type": "Sedan", "pricePerDay": 50, "seats": 5 }` | Create a new car _(admin only)_    |
+| PUT    | `/cars/:id` | `{ "pricePerDay": 60 }`                                                                    | Update car details _(admin only)_  |
+| DELETE | `/cars/:id` | None                                                                                       | Delete a car _(admin only)_        |
 
 ---
 
@@ -123,11 +123,11 @@ This API supports **two authentication methods**:
 
 > 🔒 **Requires Authentication:** Cookie or `Authorization: Bearer <token>`
 
-| Method | Endpoint              | Request Body                                                                                       | Description              |
-| ------ | --------------------- | -------------------------------------------------------------------------------------------------- | ------------------------ |
-| POST   | `/booking/create`     | `{ "carId": "car_id_here", "startDate": "2025-12-12T10:00:00", "endDate": "2025-12-15T10:00:00" }` | Create a new booking     |
-| GET    | `/booking/:id`        | None                                                                                               | Get booking details by ID|
-| PUT    | `/booking/:id/cancel` | None                                                                                               | Cancel a booking         |
+| Method | Endpoint              | Request Body                                                                                       | Description               |
+| ------ | --------------------- | -------------------------------------------------------------------------------------------------- | ------------------------- |
+| POST   | `/booking/create`     | `{ "carId": "car_id_here", "startDate": "2025-12-12T10:00:00", "endDate": "2025-12-15T10:00:00" }` | Create a new booking      |
+| GET    | `/booking/:id`        | None                                                                                               | Get booking details by ID |
+| PUT    | `/booking/:id/cancel` | None                                                                                               | Cancel a booking          |
 
 ---
 
@@ -135,19 +135,19 @@ This API supports **two authentication methods**:
 
 > 🔒 **Requires Authentication:** Cookie or `Authorization: Bearer <token>` + **Admin role**
 
-| Method | Endpoint                    | Request Body | Description                        |
-| ------ | --------------------------- | ------------ | ---------------------------------- |
-| GET    | `/admin/users`              | None         | List all users                     |
-| GET    | `/admin/bookings`           | None         | List all bookings                  |
-| PUT    | `/admin/bookings/:id/approve` | None       | Approve a booking (mark confirmed) |
+| Method | Endpoint                      | Request Body | Description                        |
+| ------ | ----------------------------- | ------------ | ---------------------------------- |
+| GET    | `/admin/users`                | None         | List all users                     |
+| GET    | `/admin/bookings`             | None         | List all bookings                  |
+| PUT    | `/admin/bookings/:id/approve` | None         | Approve a booking (mark confirmed) |
 
 ---
 
 ### 6️⃣ File Upload / Static Files
 
-| Method | Endpoint             | Description                               |
-| ------ | -------------------- | ----------------------------------------- |
-| GET    | `/uploads/:filename` | Serve uploaded files (license, car images)|
+| Method | Endpoint             | Description                                |
+| ------ | -------------------- | ------------------------------------------ |
+| GET    | `/uploads/:filename` | Serve uploaded files (license, car images) |
 
 ---
 

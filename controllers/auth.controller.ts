@@ -1,19 +1,19 @@
-import type { Context } from 'hono'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import type { Context } from "hono";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-import { prisma } from '../config/db'
-import env from '../config/env'
-import '../types/hono.d'
-import { setCookie, deleteCookie } from 'hono/cookie'
+import { prisma } from "../config/db";
+import env from "../config/env";
+import "../types/hono.d";
+import { setCookie, deleteCookie } from "hono/cookie";
 
 /**
  * Authentication Controller
  * Handles user registration, login, and profile retrieval
  */
 class AuthController {
-  private readonly SALT_ROUNDS = Number(env.BCRYPT_SALT_ROUNDS)
-  private readonly TOKEN_EXPIRY = '7d'
+  private readonly SALT_ROUNDS = Number(env.BCRYPT_SALT_ROUNDS);
+  private readonly TOKEN_EXPIRY = "7d";
 
   /**
    * Register a new user
@@ -21,29 +21,29 @@ class AuthController {
    */
   public registerUser = async (c: Context): Promise<Response> => {
     const { email, name, password } = c.req.validatedBody as {
-      email: string
-      name: string
-      password: string
-    }
+      email: string;
+      name: string;
+      password: string;
+    };
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
       select: { id: true },
-    })
+    });
 
     if (existingUser) {
-      return c.json({ message: 'User already exists' }, 409)
+      return c.json({ message: "User already exists" }, 409);
     }
 
-    const hashedPassword = await bcrypt.hash(password, this.SALT_ROUNDS)
+    const hashedPassword = await bcrypt.hash(password, this.SALT_ROUNDS);
 
     const user = await prisma.user.create({
       data: { email, name, password: hashedPassword },
       select: { id: true, email: true, name: true, createdAt: true },
-    })
+    });
 
-    return c.json({ message: 'User registered successfully', data: user }, 201)
-  }
+    return c.json({ message: "User registered successfully", data: user }, 201);
+  };
 
   /**
    * Login user and return JWT token
@@ -51,72 +51,78 @@ class AuthController {
    */
   public loginUser = async (c: Context): Promise<Response> => {
     const { email, password } = c.req.validatedBody as {
-      email: string
-      password: string
-    }
+      email: string;
+      password: string;
+    };
 
     const user = await prisma.user.findUnique({
       where: { email },
       select: { id: true, email: true, name: true, password: true },
-    })
+    });
 
     if (!user) {
-      return c.json({ message: 'Invalid credentials' }, 401)
+      return c.json({ message: "Invalid credentials" }, 401);
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password)
+    const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      return c.json({ message: 'Invalid credentials' }, 401)
+      return c.json({ message: "Invalid credentials" }, 401);
     }
 
     const token = jwt.sign({ id: user.id }, env.JWT_SECRET!, {
       expiresIn: this.TOKEN_EXPIRY,
-    })
+    });
 
     // Set cookie for web clients
-    setCookie(c, 'access_token', token, {
+    setCookie(c, "access_token", token, {
       httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: 'Strict',
+      secure: env.NODE_ENV === "production",
+      sameSite: "Strict",
       maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: '/',
-    })
+      path: "/",
+    });
 
     // Return token in response for mobile clients
-    return c.json({ message: 'Login successful', token }, 200)
-  }
+    return c.json({ message: "Login successful", token }, 200);
+  };
 
   /**
    * Get current authenticated user profile
    * @route GET /auth/me
    */
   public getMe = async (c: Context): Promise<Response> => {
-    const userId = c.req.userId
+    const userId = c.req.userId;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, name: true, createdAt: true, updatedAt: true },
-    })
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
 
     if (!user) {
-      return c.json({ message: 'User not found' }, 404)
+      return c.json({ message: "User not found" }, 404);
     }
 
-    return c.json({ message: 'Success', data: user }, 200)
-  }
+    return c.json({ message: "Success", data: user }, 200);
+  };
 
   /**
    * Logout user and clear auth cookie
    * @route POST /auth/logout
    */
   public logout = async (c: Context): Promise<Response> => {
-    deleteCookie(c, 'access_token', {
-      path: '/',
-    })
+    deleteCookie(c, "access_token", {
+      path: "/",
+    });
 
-    return c.json({ message: 'Logged out successfully' }, 200)
-  }
+    return c.json({ message: "Logged out successfully" }, 200);
+  };
 }
 
-export default new AuthController()
+export default new AuthController();

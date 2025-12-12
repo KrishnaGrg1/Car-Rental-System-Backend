@@ -1,4 +1,4 @@
-import { config } from 'dotenv'
-config()
+import { config } from "dotenv";
+config();
 
-export default   process.env 
+export default process.env;
